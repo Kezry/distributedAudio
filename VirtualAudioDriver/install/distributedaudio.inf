@@ -1,0 +1,80 @@
+;
+; DistributedAudio Virtual Audio Driver
+; Installation INF File
+;
+; Copyright (c) 2026 Kezry
+; License: CC BY-NC 4.0 (Commercial use requires authorization)
+;
+
+[Version]
+Signature="$WINDOWS NT$"
+Class=Media
+ClassGuid={4d36e96c-e325-11ce-bfc1-08002be10318}
+Provider=%ManufacturerName%
+DriverVer=05/24/2026,1.0.0.0
+CatalogFile=distributedaudio.cat
+
+[DestinationDirs]
+DefaultDestDir = 12
+DistributedAudio_Device_CoInstaller_CopyFiles = 11
+
+[SourceDisksNames]
+1 = %DiskName%,"",,
+
+[SourceDisksFiles]
+distributedaudio.sys = 1,,
+
+[Manufacturer]
+%ManufacturerName%=Standard,NTamd64
+
+[Standard.NTamd64]
+%DistributedAudio.DeviceDesc%=DistributedAudio_Device, ROOT\DistributedAudio
+
+[DistributedAudio_Device]
+Include=ks.inf, wdmaudio.inf
+Needs=KS.Registration, WDMAUDIO.Registration
+CopyFiles=DistributedAudio_Device_CopyFiles
+
+[DistributedAudio_Device_CopyFiles]
+distributedaudio.sys
+
+[DistributedAudio_Device.Interfaces]
+AddInterface=%KSCATEGORY_AUDIO%,%DistributedAudio.PIPENAME%,DistributedAudio_Interface
+AddInterface=%KSCATEGORY_RENDER%,%DistributedAudio.PIPENAME%,DistributedAudio_Interface
+AddInterface=%KSCATEGORY_CAPTURE%,%DistributedAudio.PIPENAME%,DistributedAudio_Interface
+
+[DistributedAudio_Interface]
+AddReg=DistributedAudio_Interface_AddReg
+
+[DistributedAudio_Interface_AddReg]
+HKR,,FriendlyName,,%DistributedAudio.FriendlyName%
+
+[DefaultInstall]
+CopyFiles=DistributedAudio_Device_CopyFiles
+AddReg=DistributedAudio_AddReg
+
+[DefaultInstall.Services]
+AddService = DistributedAudio,%SPSVCINST_ASSOCSERVICE%, DistributedAudio_Service_Inst
+
+[DistributedAudio_Service_Inst]
+DisplayName    = %DistributedAudio.SVCDESC%
+ServiceType    = 1               ; SERVICE_KERNEL_DRIVER
+StartType      = 3               ; SERVICE_DEMAND_START
+ErrorControl   = 1               ; SERVICE_ERROR_NORMAL
+ServiceBinary  = %12%\distributedaudio.sys
+
+[DistributedAudio_AddReg]
+HKR,"Parameters","WaveRtc",0x00010001,1
+HKR,"Parameters","InputGain",0x00010001,0x00001000
+
+[Strings]
+ManufacturerName="Kezry"
+DiskName = "DistributedAudio Installation Disk"
+DistributedAudio.DeviceDesc = "DistributedAudio Virtual Audio Device"
+DistributedAudio.FriendlyName = "DistributedAudio Virtual Speaker"
+DistributedAudio.SVCDESC = "DistributedAudio Virtual Audio Driver"
+DistributedAudio.PIPENAME = "{D0F78B05-CC61-4EC6-8316-86A8A8E60A41}"
+KSCATEGORY_AUDIO="{6994AD04-93EF-11D0-A3CC-00A0C9223196}"
+KSCATEGORY_RENDER="{65E8773E-8F56-11D0-A3B9-00A0C9223196}"
+KSCATEGORY_CAPTURE="{65E8773D-8F56-11D0-A3B9-00A0C9223196}"
+SPSVCINST_ASSOCSERVICE=0x00000002

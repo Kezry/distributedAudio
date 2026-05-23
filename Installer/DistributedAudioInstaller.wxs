@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Product Id="*"
+           Name="Distributed Audio System"
+           Language="1033"
+           Version="1.0.0.0"
+           Manufacturer="Kezry"
+           UpgradeCode="D0F78B05-CC61-4EC6-8316-86A8A8E60A41">
+
+    <Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" />
+
+    <MajorUpgrade DowngradeErrorMessage="A newer version is already installed." />
+    <MediaTemplate EmbedCab="yes" />
+
+    <Feature Id="ProductFeature" Title="Distributed Audio System" Level="1">
+      <ComponentGroupRef Id="DriverComponents" />
+      <ComponentGroupRef Id="ApplicationComponents" />
+      <ComponentGroupRef Id="DocumentationComponents" />
+    </Feature>
+
+    <!-- 驱动组件 -->
+    <DirectoryRef Id="DRIVERDIR">
+      <Component Id="DriverFile" Guid="D0F78B06-CC61-4EC6-8316-86A8A8E60A42">
+        <File Id="distributedaudio_sys" Source="VirtualAudioDriver\build\distributedaudio.sys" KeyPath="yes" />
+        <File Id="distributedaudio_inf" Source="VirtualAudioDriver\install\distributedaudio.inf" />
+        <File Id="distributedaudio_cat" Source="VirtualAudioDriver\build\distributedaudio.cat" />
+
+        <!-- 使用pnputil安装驱动 -->
+        <ServiceInstall Id="DriverService"
+                       Type="kernelDriver"
+                       Start="boot"
+                       ErrorControl="ignore"
+                       Vital="no" />
+      </Component>
+    </DirectoryRef>
+
+    <!-- 应用程序组件 -->
+    <DirectoryRef Id="APPLICATIONFOLDER">
+      <Component Id="MainExecutable" Guid="D0F78B07-CC61-4EC6-8316-86A8A8E60A43">
+        <File Id="WindowsSoundExe" Source="WindowsSound\bin\Release\net8.0-windows\win-x64\publish\DistributedAudio.exe" KeyPath="yes">
+          <Shortcut Id="DesktopShortcut" Directory="DesktopFolder" Name="Distributed Audio" Icon="Icon.ico" Advertise="yes" />
+          <Shortcut Id="StartMenuShortcut" Directory="ProgramMenuFolder" Name="Distributed Audio" Icon="Icon.ico" Advertise="yes" />
+        </File>
+        <File Id="Icon" Source="Resources\app.ico" />
+      </Component>
+
+      <Component Id="ServiceExecutable" Guid="D0F78B08-CC61-4EC6-8316-86A8A8E60A44">
+        <File Id="AudioServiceExe" Source="VirtualAudioDriver\service\AudioCaptureService.exe" />
+        <ServiceInstall Id="AudioServiceInstall"
+                       Type="ownProcess"
+                       Vital="yes"
+                       Name="DistributedAudioService"
+                       DisplayName="Distributed Audio Capture Service"
+                       Description="Captures audio from virtual driver and streams to devices"
+                       Start="auto"
+                       Account="LocalSystem"
+                       ErrorControl="normal">
+          <Dependency Id="DriverDependency" Group="DriverServices" />
+        </ServiceInstall>
+        <ServiceControl Id="AudioServiceControl"
+                       Name="DistributedAudioService"
+                       Stop="both"
+                       Remove="uninstall"
+                       Wait="yes" />
+      </Component>
+    </DirectoryRef>
+
+    <!-- 文档组件 -->
+    <DirectoryRef Id="DOCUMENTATIONDIR">
+      <Component Id="DocumentationFiles" Guid="D0F78B09-CC61-4EC6-8316-86A8A8E60A45">
+        <File Id="ReadmeFile" Source="README.md" />
+        <File Id="LicenseFile" Source="LICENSE" />
+        <File Id="ProtocolDoc" Source="Protocol\AudioStreamingProtocol.md" />
+      </Component>
+    </DirectoryRef>
+
+    <!-- 注册表项 -->
+    <DirectoryRef Id="APPLICATIONFOLDER">
+      <Component Id="RegistryEntries" Guid="D0F78B0A-CC61-4EC6-8316-86A8A8E60A46">
+        <RegistryKey Root="HKLM" Key="SOFTWARE\Kezry\DistributedAudio">
+          <RegistryValue Name="InstallPath" Type="string" Value="[APPLICATIONFOLDER]" />
+          <RegistryValue Name="Version" Type="string" Value="1.0.0.0" />
+          <RegistryValue Name="DriverInstalled" Type="integer" Value="1" />
+        </RegistryKey>
+      </Component>
+    </DirectoryRef>
+
+    <!-- 自定义操作：安装驱动 -->
+    <Binary Id="WixCA" SourceFile="WixCustomActions.dll" />
+
+    <CustomAction Id="InstallDriver"
+                  BinaryKey="WixCA"
+                  DllEntry="InstallDriverCA"
+                  Execute="deferred"
+                  Impersonate="no"
+                  Return="check" />
+
+    <CustomAction Id="UninstallDriver"
+                  BinaryKey="WixCA"
+                  DllEntry="UninstallDriverCA"
+                  Execute="deferred"
+                  Impersonate="no"
+                  Return="ignore" />
+
+    <InstallExecuteSequence>
+      <Custom Action="InstallDriver" After="InstallFiles">NOT Installed</Custom>
+      <Custom Action="UninstallDriver" Before="RemoveFiles">REMOVE="ALL"</Custom>
+    </InstallExecuteSequence>
+
+    <!-- UI -->
+    <UI>
+      <UIRef Id="WixUI_InstallDir" />
+      <DialogRef Id="LicenseAgreementDlg" />
+      <DialogRef Id="InstallDirDlg" />
+      <DialogRef Id="VerifyReadyDlg" />
+      <DialogRef Id="ExitDialog" />
+
+      <Publish Dialog="ExitDialog" Control="Finish" Event="DoAction" Value="LaunchApplication">WIXUI_EXITDIALOGOPTIONALCHECKBOX = 1 and NOT Installed</Publish>
+    </UI>
+
+    <Property Id="WIXUI_INSTALLDIR" Value="APPLICATIONFOLDER" />
+    <Property Id="ARPNOMODIFY" Value="1" />
+    <Property Id="WIXUI_EXITDIALOGOPTIONALCHECKBOXTEXT" Value="Launch Distributed Audio" />
+
+    <!-- 图标 -->
+    <Icon Id="Icon.ico" SourceFile="Resources\app.ico" />
+    <Property Id="ARPPRODUCTICON" Value="Icon.ico" />
+
+  </Product>
+</Wix>

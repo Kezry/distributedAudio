@@ -1,0 +1,146 @@
+<Window x:Class="WindowsSound.UI.Views.ModeSwitchWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Title="工作模式选择" Height="450" Width="600"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize"
+        Background="#1e1e1e">
+
+    <Window.Resources>
+        <!-- 模式卡片样式 -->
+        <Style x:Key="ModeCardStyle" TargetType="Border">
+            <Setter Property="Background" Value="#2a2a2a"/>
+            <Setter Property="BorderBrush" Value="#3a3a3a"/>
+            <Setter Property="BorderThickness" Value="2"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="Padding" Value="15"/>
+            <Setter Property="Margin" Value="10"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Width" Value="160"/>
+            <Setter Property="Height" Value="200"/>
+        </Style>
+
+        <Style x:Key="ModeTitleStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Foreground" Value="#e0e0e0"/>
+            <Setter Property="Margin" Value="0,0,0,10"/>
+        </Style>
+
+        <Style x:Key="ModeDescStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="Foreground" Value="#a0a0a0"/>
+            <Setter Property="TextWrapping" Value="Wrap"/>
+            <Setter Property="Margin" Value="0,0,0,10"/>
+        </Style>
+
+        <Style x:Key="ModeHintStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="10"/>
+            <Setter Property="Foreground" Value="#4CAF50"/>
+            <Setter Property="Margin" Value="0,10,0,0"/>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- 标题 -->
+        <Border Grid.Row="0" Background="#252525" Padding="15" BorderBrush="#3a3a3a" BorderThickness="0,0,0,1">
+            <StackPanel>
+                <TextBlock Text="选择工作模式" FontSize="20" FontWeight="Bold" Foreground="#e0e0e0"/>
+                <TextBlock Text="不同模式适用于不同的使用场景" FontSize="12" Foreground="#808080" Margin="0,5,0,0"/>
+            </StackPanel>
+        </Border>
+
+        <!-- 模式选择区 -->
+        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+
+            <!-- 声卡模式 -->
+            <Border Style="{StaticResource ModeCardStyle}"
+                     BorderBrush="{Binding IsSoundCardMode, Converter={StaticResource BoolToBrushConverter}}">
+                <Border.InputBindings>
+                    <MouseBinding Command="{Binding SwitchModeCommand}" CommandParameter="SoundCard" MouseAction="LeftClick"/>
+                </Border.InputBindings>
+                <StackPanel>
+                    <TextBlock Text="🎵" FontSize="32" Margin="0,0,0,10" HorizontalAlignment="Center"/>
+                    <TextBlock Text="声卡模式" Style="{StaticResource ModeTitleStyle}" TextAlignment="Center"/>
+                    <TextBlock Style="{StaticResource ModeDescStyle}">
+                        <Run Text="使用自定义协议"/>
+                        <LineBreak/>
+                        <Run Text="低延迟、高同步精度"/>
+                        <LineBreak/>
+                        <Run Text="推荐用于多设备"/>
+                    </TextBlock>
+                    <TextBlock Text="⭐ 推荐" FontSize="10" Foreground="#FFD700" Margin="0,5,0,0" HorizontalAlignment="Center"/>
+                </StackPanel>
+            </Border>
+
+            <!-- DLNA 单机 -->
+            <Border Style="{StaticResource ModeCardStyle}"
+                     BorderBrush="{Binding IsDlnaSingleMode, Converter={StaticResource BoolToBrushConverter}}">
+                <Border.InputBindings>
+                    <MouseBinding Command="{Binding SwitchModeCommand}" CommandParameter="DlnaSingle" MouseAction="LeftClick"/>
+                </Border.InputBindings>
+                <StackPanel>
+                    <TextBlock Text="📻" FontSize="32" Margin="0,0,0,10" HorizontalAlignment="Center"/>
+                    <TextBlock Text="DLNA 单机" Style="{StaticResource ModeTitleStyle}" TextAlignment="Center"/>
+                    <TextBlock Style="{StaticResource ModeDescStyle}">
+                        <Run Text="标准DLNA协议"/>
+                        <LineBreak/>
+                        <Run Text="兼容性最好"/>
+                        <LineBreak/>
+                        <Run Text="适合单设备播放"/>
+                    </TextBlock>
+                </StackPanel>
+            </Border>
+
+            <!-- DLNA 多机 -->
+            <Border Style="{StaticResource ModeCardStyle}"
+                     BorderBrush="{Binding IsDlnaMultiMode, Converter={StaticResource BoolToBrushConverter}}">
+                <Border.InputBindings>
+                    <MouseBinding Command="{Binding SwitchModeCommand}" CommandParameter="DlnaMulti" MouseAction="LeftClick"/>
+                </Border.InputBindings>
+                <StackPanel>
+                    <TextBlock Text="🎛️" FontSize="32" Margin="0,0,0,10" HorizontalAlignment="Center"/>
+                    <TextBlock Text="DLNA 多机" Style="{StaticResource ModeTitleStyle}" TextAlignment="Center"/>
+                    <TextBlock Style="{StaticResource ModeDescStyle}">
+                        <Run Text="增强DLNA协议"/>
+                        <LineBreak/>
+                        <Run Text="支持多设备同步"/>
+                        <LineBreak/>
+                        <Run Text="需要延迟校准"/>
+                    </TextBlock>
+                </StackPanel>
+            </Border>
+
+        </StackPanel>
+
+        <!-- 底部信息 -->
+        <Border Grid.Row="2" Background="#252525" Padding="15" BorderBrush="#3a3a3a" BorderThickness="0,1,0,0">
+            <StackPanel>
+                <TextBlock Text="{Binding ModeDescription}" FontSize="13" Foreground="#e0e0e0" Margin="0,0,0,5"/>
+                <TextBlock Text="{Binding ModeLatencyHint}" FontSize="11" Foreground="#80c080"/>
+            </StackPanel>
+        </Border>
+
+        <!-- 关闭按钮 -->
+        <Button Grid.Row="0" Grid.RowSpan="3"
+                Width="40" Height="40"
+                HorizontalAlignment="Right" VerticalAlignment="Top"
+                Margin="0,10,10,0"
+                Click="CloseButton_Click"
+                Background="#3a3a3a"
+                BorderBrush="#4a4a4a"
+                Foreground="#e0e0e0"
+                FontSize="18"
+                Content="✕"
+                Cursor="Hand"/>
+    </Grid>
+</Window>
