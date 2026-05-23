@@ -27,6 +27,11 @@ jobs:
         cd AndroidController
         chmod +x gradlew
 
+    - name: Initialize Gradle wrapper
+      run: |
+        cd AndroidController
+        gradle wrapper --gradle-version 8.5
+
     - name: Build Debug APK
       run: |
         cd AndroidController
@@ -38,3 +43,4 @@ jobs:
         name: controller-debug-apk
         path: AndroidController/app/build/outputs/apk/debug/app-debug.apk
         retention-days: 30
+        if-no-files-found: warn
