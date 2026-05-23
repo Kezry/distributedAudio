@@ -1069,3 +1069,19 @@ docs/
 - WindowsSound: .NET 8.0构建支持
 - 测试工作流: 验证Actions响应
 
+**进一步优化 (2026-05-24):**
+- a5eb31c: 使用working-directory替代cd命令，提高可读性
+- 更新缓存键包含gradle-wrapper.properties
+- 修复APK上传路径使用*.apk通配符
+- bba65e5: 添加Android SDK许可证接受步骤
+- 添加--info标志以获得更详细的构建日志
+- 使用ls -laR递归列出构建输出
+- 将if-no-files-found改为warn以提高可见性
+
+**修复的问题:**
+- Gradle wrapper文件缺失 → 已添加gradle-wrapper.jar
+- 根build.gradle缺失 → 已为AndroidController添加
+- 工作流路径问题 → 使用working-directory替代cd
+- 许可证问题 → 添加sdkmanager许可证接受步骤
+- 调试困难 → 添加详细日志输出
+
