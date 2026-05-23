@@ -1,0 +1,26 @@
+# Distributed Audio System - Change Log
+
+## [2026-05-23] 项目初始化
+- 创建分布式音频系统项目结构
+- AndroidSoundPlayer: 安卓声音端
+  - 设备标识管理 (UUID + 别名)
+  - 自定义协议音频接收器 (UDP)
+  - 低延迟音频播放器 (AudioTrack + 抖动缓冲)
+  - mDNS/Bonjour 设备发现服务
+- AndroidController: 安卓配置端
+  - 网络扫描器 (mDNS 设备发现)
+  - 设备配置管理 (工作模式/声道配置)
+- WindowsSound: Windows发送端
+  - WASAPI Loopback 音频捕获
+  - Opus 编码器
+  - UDP/RTP 音频传输
+  - 设备扫描器 (mDNS)
+- 配置文件:
+  - LICENSE: CC BY-NC 4.0 许可证
+  - README.md: 项目说明文档
+  - .gitignore: Git 忽略规则
+- CI/CD:
+  - AndroidSoundPlayer GitHub Actions
+  - AndroidController GitHub Actions
+  - WindowsSound GitHub Actions
+  - 项目状态检查工作流
