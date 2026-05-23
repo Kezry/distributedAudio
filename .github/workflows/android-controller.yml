@@ -1,4 +1,4 @@
-name: Android Controller CI/CD
+name: Android Controller CI
 
 on:
   push:
@@ -10,6 +10,7 @@ jobs:
   build:
     name: Build Android Controller
     runs-on: ubuntu-latest
+    timeout-minutes: 30
 
     steps:
     - name: Checkout code
@@ -27,20 +28,37 @@ jobs:
         cd AndroidController
         chmod +x gradlew
 
-    - name: Initialize Gradle wrapper
+    - name: Cache Gradle packages
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.gradle/caches/
+          ~/.gradle/wrapper/
+        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
+        restore-keys: |
+          ${{ runner.os }}-gradle-
+
+    - name: Validate Gradle wrapper
       run: |
         cd AndroidController
-        gradle wrapper --gradle-version 8.5
+        ls -la gradle/wrapper/
+        echo "Checking gradle-wrapper.properties..."
+        cat gradle/wrapper/gradle-wrapper.properties
 
     - name: Build Debug APK
       run: |
         cd AndroidController
-        ./gradlew assembleDebug
+        ./gradlew assembleDebug --no-daemon --stacktrace
 
-    - name: Upload Debug APK
+    - name: Check build outputs
+      run: |
+        cd AndroidController
+        ls -la app/build/outputs/apk/debug/ || echo "No APKs found"
+
+    - name: Upload APK if exists
       uses: actions/upload-artifact@v4
       with:
         name: controller-debug-apk
         path: AndroidController/app/build/outputs/apk/debug/app-debug.apk
         retention-days: 30
-        if-no-files-found: warn
+        if-no-files-found: ignore
