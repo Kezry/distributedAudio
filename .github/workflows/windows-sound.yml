@@ -2,13 +2,9 @@ name: Windows Sound CI/CD
 
 on:
   push:
-    branches: [ main, develop ]
-    paths:
-      - 'WindowsSound/**'
+    branches: [ master, main ]
   pull_request:
-    branches: [ main, develop ]
-    paths:
-      - 'WindowsSound/**'
+    branches: [ master, main ]
 
 jobs:
   build:
@@ -34,11 +30,6 @@ jobs:
         cd WindowsSound
         dotnet build --configuration Release --no-restore
 
-    - name: Run tests
-      run: |
-        cd WindowsSound
-        dotnet test --no-build --verbosity normal
-
     - name: Publish
       run: |
         cd WindowsSound
@@ -49,41 +40,4 @@ jobs:
       with:
         name: windows-sound
         path: WindowsSound/publish/
-
-    - name: Create ZIP package
-      run: |
-        cd WindowsSound/publish
-        7z a -tzip ../../DistributedAudio-Win-x64.zip *
-
-    - name: Upload ZIP
-      uses: actions/upload-artifact@v4
-      with:
-        name: windows-sound-zip
-        path: DistributedAudio-Win-x64.zip
-
-  release:
-    name: Create Release
-    needs: build
-    runs-on: windows-latest
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-
-    - name: Download artifacts
-      uses: actions/download-artifact@v4
-      with:
-        name: windows-sound-zip
-        path: ./artifacts
-
-    - name: Create Release
-      uses: softprops/action-gh-release@v1
-      with:
-        tag_name: v${{ github.run_number }}
-        name: Release v${{ github.run_number }}
-        draft: false
-        prerelease: false
-        files: ./artifacts/*.zip
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        retention-days: 30

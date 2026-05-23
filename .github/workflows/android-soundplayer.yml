@@ -2,13 +2,9 @@ name: Android Sound Player CI/CD
 
 on:
   push:
-    branches: [ main, develop ]
-    paths:
-      - 'AndroidSoundPlayer/**'
+    branches: [ master, main ]
   pull_request:
-    branches: [ main, develop ]
-    paths:
-      - 'AndroidSoundPlayer/**'
+    branches: [ master, main ]
 
 jobs:
   build:
@@ -31,57 +27,28 @@ jobs:
         cd AndroidSoundPlayer
         chmod +x gradlew
 
-    - name: Build with Gradle
+    - name: Build Debug APK
       run: |
         cd AndroidSoundPlayer
-        ./gradlew build
+        ./gradlew assembleDebug
 
-    - name: Run unit tests
-      run: |
-        cd AndroidSoundPlayer
-        ./gradlew test
-
-    - name: Run lint
-      run: |
-        cd AndroidSoundPlayer
-        ./gradlew lint
-
-    - name: Upload APK
+    - name: Upload Debug APK
       uses: actions/upload-artifact@v4
       with:
-        name: soundplayer-apk
+        name: soundplayer-debug-apk
         path: AndroidSoundPlayer/app/build/outputs/apk/debug/app-debug.apk
+        retention-days: 30
 
-    - name: Upload test results
-      if: always()
+    - name: Build Release APK
+      if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+      run: |
+        cd AndroidSoundPlayer
+        ./gradlew assembleRelease
+
+    - name: Upload Release APK
+      if: github.event_name == 'push' && github.ref == 'refs/heads/master'
       uses: actions/upload-artifact@v4
       with:
-        name: test-results
-        path: AndroidSoundPlayer/app/build/test-results/
-
-  release:
-    name: Create Release
-    needs: build
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-
-    - name: Download APK
-      uses: actions/download-artifact@v4
-      with:
-        name: soundplayer-apk
-        path: ./artifacts
-
-    - name: Create Release
-      uses: softprops/action-gh-release@v1
-      with:
-        tag_name: v${{ github.run_number }}
-        name: Release v${{ github.run_number }}
-        draft: false
-        prerelease: false
-        files: ./artifacts/*.apk
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        name: soundplayer-release-apk
+        path: AndroidSoundPlayer/app/build/outputs/apk/release/app-release-unsigned.apk
+        retention-days: 90

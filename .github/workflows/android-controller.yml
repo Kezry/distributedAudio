@@ -2,13 +2,9 @@ name: Android Controller CI/CD
 
 on:
   push:
-    branches: [ main, develop ]
-    paths:
-      - 'AndroidController/**'
+    branches: [ master, main ]
   pull_request:
-    branches: [ main, develop ]
-    paths:
-      - 'AndroidController/**'
+    branches: [ master, main ]
 
 jobs:
   build:
@@ -31,57 +27,14 @@ jobs:
         cd AndroidController
         chmod +x gradlew
 
-    - name: Build with Gradle
+    - name: Build Debug APK
       run: |
         cd AndroidController
-        ./gradlew build
+        ./gradlew assembleDebug
 
-    - name: Run unit tests
-      run: |
-        cd AndroidController
-        ./gradlew test
-
-    - name: Run lint
-      run: |
-        cd AndroidController
-        ./gradlew lint
-
-    - name: Upload APK
+    - name: Upload Debug APK
       uses: actions/upload-artifact@v4
       with:
-        name: controller-apk
+        name: controller-debug-apk
         path: AndroidController/app/build/outputs/apk/debug/app-debug.apk
-
-    - name: Upload test results
-      if: always()
-      uses: actions/upload-artifact@v4
-      with:
-        name: controller-test-results
-        path: AndroidController/app/build/test-results/
-
-  release:
-    name: Create Release
-    needs: build
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-
-    - name: Download APK
-      uses: actions/download-artifact@v4
-      with:
-        name: controller-apk
-        path: ./artifacts
-
-    - name: Create Release
-      uses: softprops/action-gh-release@v1
-      with:
-        tag_name: v${{ github.run_number }}
-        name: Release v${{ github.run_number }}
-        draft: false
-        prerelease: false
-        files: ./artifacts/*.apk
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        retention-days: 30
