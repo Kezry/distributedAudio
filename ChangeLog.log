@@ -65,3 +65,74 @@
 - todolist.md 更新
   - 标记 #9 WASAPI 音频捕获为"进行中"
   - 进度: 0/18 完成, 1/18 进行中
+
+## [2026-05-24] WindowsSound 模块开发完成
+- 完成 WindowsSound 发送端所有核心功能开发
+- #9 WASAPI 音频捕获 ✅
+  - 实现完整的 WASAPI Loopback 捕获
+  - 支持音频设备枚举和选择 (AudioDeviceManager)
+  - 支持多格式配置 (AudioFormatConfig: 立体声/2.1/5.1/7.1)
+  - 低延迟优化，支持延迟查询
+- #10 Opus 音频编码器 ✅
+  - 完整的 Opus 编码器封装 (OpusEncoder)
+  - 支持码率、复杂度配置
+  - 支持 CBR/VBR 模式
+  - 添加 Opus 解码器 (OpusDecoder)
+- #11 设备发现与扫描 ✅
+  - 完整的 mDNS/Bonjour 设备扫描 (DeviceScanner)
+  - 支持连续扫描模式
+  - 设备延迟测量功能
+  - 离线设备自动清理
+  - 设备状态实时监控
+- #12 声道分离与路由 ✅
+  - ChannelRouter: 多声道分离和路由
+  - 支持立体声、2.1、5.1、7.1 配置
+  - 设备-声道映射管理
+  - ChannelBalanceController: 声道平衡控制
+  - 延迟补偿算法
+- #13 UDP 音频传输 ✅
+  - AudioStreamer: 单设备音频流传输
+  - RTP 协议封装支持
+  - AudioStreamerManager: 多设备管理
+  - 发送队列管理
+  - 传输统计 (数据包、字节数)
+  - 错误处理和恢复
+- #14 音频同步管理器 ✅
+  - AudioSyncManager: PTP 时间戳同步
+  - 设备延迟测量和补偿
+  - 同步精度计算
+  - DynamicBufferManager: 动态缓冲区管理
+  - 网络抖动自适应
+- #15 WPF 用户界面 ✅
+  - MainWindow.xaml: 主窗口布局
+  - MainViewModel.cs: MVVM 视图模型
+  - 设备列表和活动设备管理
+  - 实时音频电平显示
+  - 传输状态监控
+  - 声道配置选择器
+- #16 系统托盘与集成 ✅
+  - TrayIconService: 系统托盘图标
+  - HotKeyService: 全局快捷键 (Ctrl+Shift+O 显示, Ctrl+Shift+S 切换)
+  - SystemIntegrationService: 开机自启动
+  - AudioDeviceWatcher: 音频设备热插拔监控
+  - NetworkStateMonitor: 网络状态监控和重连
+
+**新增文件 (20+):**
+- AudioCapture/: AudioDevice.cs, AudioFormatConfig.cs, AudioDeviceWatcher.cs
+- AudioEncoder/: OpusDecoder.cs
+- ChannelRouter/: ChannelMapping.cs, ChannelRouter.cs
+- SyncManager/: SyncProtocol.cs, SyncManager.cs
+- UI/ViewModels/: MainViewModel.cs
+- UI/Views/: MainWindow.xaml, MainWindow.xaml.cs, App.xaml
+- UI/Services/: TrayIconService.cs, HotKeyService.cs
+
+**技术栈：**
+- .NET 8.0 WPF
+- CommunityToolkit.Mvvm (MVVM 框架)
+- NAudio (音频处理)
+
+**进度更新：** 8/18 任务完成 (44%)
+- WindowsSound: 8/8 任务完成 ✅
+- AndroidSoundPlayer: 0/5 任务待开发
+- AndroidController: 0/3 任务待开发
+- 跨模块: 0/2 任务待开发

@@ -8,16 +8,17 @@
     <ApplicationIcon>Resources\app.ico</ApplicationIcon>
     <AssemblyName>DistributedAudio</AssemblyName>
     <Version>1.0.0</Version>
+    <Authors>Kezry</Authors>
+    <Product>Distributed Audio System</Product>
+    <Description>分布式音频系统 - 通过 WiFi 将电脑音频分发到多个安卓设备</Description>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="NAudio" Version="2.2.1" />
-    <PackageReference Include="NAudio.Lame" Version="2.1.0" />
-    <PackageReference Include="System.IO.Ports" Version="8.0.0" />
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
-    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
-    <PackageReference Include="OpusCodec" Version="1.0.0" />
+    <PackageReference Include="NAudio" Version="2.2.1" />
+    <PackageReference Include="NAudio.Lame" Version="2.1.0" />
   </ItemGroup>
 
   <ItemGroup>

@@ -16,6 +16,10 @@ namespace DistributedAudio.AudioEncoder
         private readonly int _bitrate;
         private bool _disposed;
 
+        public int SampleRate => _sampleRate;
+        public int Channels => _channels;
+        public int Bitrate => _bitrate;
+
         public OpusEncoder(int sampleRate = 48000, int channels = 2, int bitrate = 64000)
         {
             _sampleRate = sampleRate;
@@ -35,10 +39,33 @@ namespace DistributedAudio.AudioEncoder
                 throw new InvalidOperationException($"Failed to create Opus encoder: {error}");
             }
 
-            // Configure encoder
+            // Configure encoder for low latency
             OpusNative.opus_encoder_ctl(_encoder, OpusNative.OPUS_SET_BITRATE_REQUEST, bitrate);
             OpusNative.opus_encoder_ctl(_encoder, OpusNative.OPUS_SET_COMPLEXITY_REQUEST, 10);
             OpusNative.opus_encoder_ctl(_encoder, OpusNative.OPUS_SET_SIGNAL_REQUEST, OpusNative.OPUS_SIGNAL_MUSIC);
+            OpusNative.opus_encoder_ctl(_encoder, OpusNative.OPUS_SET_VBR_REQUEST, 0); // CBR for consistent stream
+            OpusNative.opus_encoder_ctl(_encoder, OpusNative.OPUS_SET_APPLICATION_REQUEST, OpusNative.OPUS_APPLICATION_AUDIO);
+        }
+
+        /// <summary>
+        /// 设置码率
+        /// </summary>
+        public void SetBitrate(int bitrate)
+        {
+            if (_disposed) throw new ObjectDisposedException(nameof(OpusEncoder));
+            OpusNative.opus_encoder_ctl(_encoder, OpusNative.OPUS_SET_BITRATE_REQUEST, bitrate);
+        }
+
+        /// <summary>
+        /// 设置复杂度 (0-10)
+        /// </summary>
+        public void SetComplexity(int complexity)
+        {
+            if (complexity < 0 || complexity > 10)
+                throw new ArgumentOutOfRangeException(nameof(complexity), "Complexity must be 0-10");
+
+            if (_disposed) throw new ObjectDisposedException(nameof(OpusEncoder));
+            OpusNative.opus_encoder_ctl(_encoder, OpusNative.OPUS_SET_COMPLEXITY_REQUEST, complexity);
         }
 
         /// <summary>
@@ -48,13 +75,14 @@ namespace DistributedAudio.AudioEncoder
         {
             if (_disposed) throw new ObjectDisposedException(nameof(OpusEncoder));
 
-            int maxOutputSize = pcmData.Length / 4; // Conservative estimate
+            int samplesPerFrame = _frameSize;
+            int maxOutputSize = pcmData.Length; // Conservative estimate
             byte[] output = new byte[maxOutputSize];
 
             int encodedBytes = OpusNative.opus_encode(
                 _encoder,
                 pcmData,
-                _frameSize,
+                samplesPerFrame,
                 output,
                 maxOutputSize
             );
@@ -67,6 +95,14 @@ namespace DistributedAudio.AudioEncoder
             byte[] result = new byte[encodedBytes];
             Array.Copy(output, result, encodedBytes);
             return result;
+        }
+
+        /// <summary>
+        /// 获取编码器信息
+        /// </summary>
+        public string GetEncoderInfo()
+        {
+            return $"Opus {_sampleRate}Hz, {_channels}ch, {_bitrate}bps";
         }
 
         public void Dispose()
@@ -92,10 +128,15 @@ namespace DistributedAudio.AudioEncoder
 
         public const int OPUS_OK = 0;
         public const int OPUS_APPLICATION_AUDIO = 2049;
+        public const int OPUS_APPLICATION_VOIP = 2048;
+        public const int OPUS_APPLICATION_LOWDELAY = 2051;
+        public const int OPUS_SIGNAL_VOICE = 1803;
         public const int OPUS_SIGNAL_MUSIC = 1804;
         public const int OPUS_SET_BITRATE_REQUEST = 4002;
         public const int OPUS_SET_COMPLEXITY_REQUEST = 4010;
         public const int OPUS_SET_SIGNAL_REQUEST = 4024;
+        public const int OPUS_SET_VBR_REQUEST = 4006;
+        public const int OPUS_SET_APPLICATION_REQUEST = 4012;
 
         [DllImport(OpusDll, CallingConvention = CallingConvention.Cdecl)]
         public static extern IntPtr opus_encoder_create(
@@ -122,6 +163,26 @@ namespace DistributedAudio.AudioEncoder
             IntPtr st,
             int request,
             int value
+        );
+
+        [DllImport(OpusDll, CallingConvention = CallingConvention.Cdecl)]
+        public static extern IntPtr opus_decoder_create(
+            int Fs,
+            int channels,
+            out int error
+        );
+
+        [DllImport(OpusDll, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void opus_decoder_destroy(IntPtr decoder);
+
+        [DllImport(OpusDll, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int opus_decode(
+            IntPtr st,
+            byte[] data,
+            int len,
+            byte[] pcm,
+            int frame_size,
+            int decode_fec
         );
     }
 }
