@@ -34,3 +34,13 @@
 - 设置项目记忆系统
   - 反馈规则: 所有改动必须增量写入 ChangeLog.log
   - 记忆路径: .claude/projects/{project}/memory/
+
+## [2026-05-23] 任务管理方式调整
+- 创建 todolist.md 统一管理所有开发任务
+- 迁移 18 个任务到 Markdown 文件
+- 任务分组:
+  - AndroidSoundPlayer: 5 个任务
+  - AndroidController: 3 个任务
+  - WindowsSound: 8 个任务
+  - 跨模块: 2 个任务
+- 每个任务包含子任务、优先级、状态标记
