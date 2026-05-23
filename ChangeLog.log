@@ -237,6 +237,18 @@
 2. 性能优化和问题修复
 3. 用户体验改进
 4. 准备 v1.0 正式发布
+
+## [2026-05-24] GitHub Actions 配置修复
+- 移动工作流文件到正确位置
+  - android-soundplayer.yml: Android 声音端构建
+  - android-controller.yml: Android 配置端构建
+  - windows-sound.yml: Windows 发送端构建
+- 添加 Gradle Wrapper 配置
+  - gradle/wrapper/gradle-wrapper.properties
+  - gradlew (Unix) 和 gradlew.bat (Windows)
+  - settings.gradle 更新
+- 修复路径引用以支持根目录工作流
+- 清理子项目中的 .github 目录
 - WindowsSound: 8/8 任务完成 ✅
 - AndroidSoundPlayer: 0/5 任务待开发
 - AndroidController: 0/3 任务待开发
