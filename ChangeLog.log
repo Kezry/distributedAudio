@@ -249,6 +249,19 @@
   - settings.gradle 更新
 - 修复路径引用以支持根目录工作流
 - 清理子项目中的 .github 目录
+- 添加 CI check 工作流用于验证 Actions 配置
+
+**GitHub Actions 状态：**
+- 工作流文件已配置在根目录 .github/workflows/
+- 仓库类型: Public (✅ 正确)
+- 工作流列表:
+  - ci-check.yml: 简单验证测试
+  - android-soundplayer.yml: Android 声音端构建
+  - android-controller.yml: Android 配置端构建
+  - windows-sound.yml: Windows 发送端构建
+  - project-status.yml: 项目状态检查
+
+**注意：** Actions 可能需要几分钟才开始触发，请访问 Actions 页面查看状态
 - WindowsSound: 8/8 任务完成 ✅
 - AndroidSoundPlayer: 0/5 任务待开发
 - AndroidController: 0/3 任务待开发

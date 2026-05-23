@@ -9,7 +9,8 @@
       "Bash(git push *)",
       "Bash(git ls-remote *)",
       "Bash(curl -s https://api.github.com/repos/Kezry/distributedAudio/conutors)",
-      "Bash(curl -s https://api.github.com/repos/Kezry/distributedAudio/contributors)"
+      "Bash(curl -s https://api.github.com/repos/Kezry/distributedAudio/contributors)",
+      "Bash(curl -s \"https://api.github.com/repos/Kezry/distributedAudio\")"
     ]
   }
 }
