@@ -23,7 +23,7 @@ jobs:
         distribution: 'temurin'
 
     - name: Grant execute permission for gradlew
-      run: chmod +x gradlew
+      run: chmod +x AndroidSoundPlayer/gradlew
 
     - name: Cache Gradle packages
       uses: actions/cache@v4
