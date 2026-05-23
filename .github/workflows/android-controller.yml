@@ -23,7 +23,7 @@ jobs:
         distribution: 'temurin'
 
     - name: Grant execute permission for gradlew
-      run: chmod +x AndroidController/gradlew
+      run: chmod +x gradlew
 
     - name: Cache Gradle packages
       uses: actions/cache@v4
@@ -36,8 +36,8 @@ jobs:
           ${{ runner.os }}-gradle-
 
     - name: Validate Gradle wrapper
-      working-directory: AndroidController
       run: |
+        cd AndroidController
         ls -la gradle/wrapper/
         cat gradle/wrapper/gradle-wrapper.properties
 
@@ -45,12 +45,13 @@ jobs:
       run: yes | sdkmanager --licenses || true
 
     - name: Build Debug APK
-      working-directory: AndroidController
-      run: ./gradlew assembleDebug --no-daemon --stacktrace --info
+      run: |
+        cd AndroidController
+        ./gradlew assembleDebug --no-daemon --stacktrace
 
     - name: Check build outputs
-      working-directory: AndroidController
       run: |
+        cd AndroidController
         ls -laR app/build/outputs/apk/ || echo "No APKs found"
 
     - name: Upload APK if exists

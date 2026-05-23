@@ -96,8 +96,25 @@
                       DisplayMemberPath="SceneName"/>
 
             <TextBlock Grid.Column="3" Text="新增场景:" VerticalAlignment="Center" Foreground="#e0e0e0"/>
-            <TextBox Grid.Column="4" Text="{Binding NewSceneName, UpdateSourceTrigger=PropertyChanged}"
-                     Watermark="场景名称"/>
+            <TextBox Grid.Column="4" Text="{Binding NewSceneName, UpdateSourceTrigger=PropertyChanged}">
+                <TextBox.Style>
+                    <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
+                        <Style.Triggers>
+                            <Trigger Property="Text" Value="">
+                                <Setter Property="Background">
+                                    <Setter.Value>
+                                        <VisualBrush Stretch="None" AlignmentX="Left">
+                                            <VisualBrush.Visual>
+                                                <TextBlock Text="场景名称" Foreground="Gray" Margin="5,0,0,0"/>
+                                            </VisualBrush.Visual>
+                                        </VisualBrush>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBox.Style>
+            </TextBox>
 
             <Button Grid.Column="6" Content="创建" Command="{Binding CreateSceneCommand}"/>
 

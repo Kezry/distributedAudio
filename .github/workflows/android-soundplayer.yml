@@ -23,7 +23,7 @@ jobs:
         distribution: 'temurin'
 
     - name: Grant execute permission for gradlew
-      run: chmod +x AndroidSoundPlayer/gradlew
+      run: chmod +x gradlew
 
     - name: Cache Gradle packages
       uses: actions/cache@v4
@@ -36,8 +36,8 @@ jobs:
           ${{ runner.os }}-gradle-
 
     - name: Validate Gradle wrapper
-      working-directory: AndroidSoundPlayer
       run: |
+        cd AndroidSoundPlayer
         ls -la gradle/wrapper/
         cat gradle/wrapper/gradle-wrapper.properties
 
@@ -45,12 +45,13 @@ jobs:
       run: yes | sdkmanager --licenses || true
 
     - name: Build Debug APK
-      working-directory: AndroidSoundPlayer
-      run: ./gradlew assembleDebug --no-daemon --stacktrace --info
+      run: |
+        cd AndroidSoundPlayer
+        ./gradlew assembleDebug --no-daemon --stacktrace
 
     - name: Check build outputs
-      working-directory: AndroidSoundPlayer
       run: |
+        cd AndroidSoundPlayer
         ls -laR app/build/outputs/apk/ || echo "No APKs found"
 
     - name: Upload APK if exists
