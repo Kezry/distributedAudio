@@ -1,0 +1,44 @@
+name: CI Test
+
+on:
+  push:
+    branches: [ master, main ]
+  pull_request:
+    branches: [ master, main ]
+
+jobs:
+  test:
+    name: Run CI Tests
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Test Python
+      run: python3 --version
+
+    - name: Test Node
+      run: node --version
+
+    - name: Test Git
+      run: git --version
+
+    - name: Check project structure
+      run: |
+        echo "Checking project structure..."
+        ls -la
+        echo "---"
+        echo "Checking Android projects..."
+        [ -d "AndroidSoundPlayer" ] && echo "✓ AndroidSoundPlayer exists"
+        [ -d "AndroidController" ] && echo "✓ AndroidController exists"
+        [ -d "WindowsSound" ] && echo "✓ WindowsSound exists"
+        echo "---"
+        echo "Counting code files..."
+        find . -name "*.java" | wc -l
+        find . -name "*.cs" | wc -l
+
+    - name: Show git log
+      run: |
+        echo "Recent commits:"
+        git log --oneline -5
