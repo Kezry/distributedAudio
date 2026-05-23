@@ -5,7 +5,6 @@ import android.content.Context;
 
 /**
  * SoundPlayer Application
- * 安卓声音端应用入口
  */
 public class SoundPlayerApp extends Application {
 

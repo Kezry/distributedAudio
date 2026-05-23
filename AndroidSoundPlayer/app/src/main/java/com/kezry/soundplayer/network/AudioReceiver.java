@@ -1,16 +1,19 @@
 package com.kezry.soundplayer.network;
 
 import android.util.Log;
+import com.kezry.soundplayer.decoder.OpusDecoder;
+import com.kezry.soundplayer.player.AudioPlayer;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * 自定义协议音频接收器
- * 使用UDP接收音频流，支持Opus/PCM格式
+ * 增强的音频接收器
+ * 支持RTP解析和Opus解码
  */
 public class AudioReceiver {
 
@@ -23,13 +26,31 @@ public class AudioReceiver {
     private ReceiveThread receiveThread;
     private AudioDataCallback callback;
 
+    // Decoder
+    private OpusDecoder opusDecoder;
+    private boolean useOpus = true;
+
+    // Statistics
+    private AtomicInteger packetsReceived = new AtomicInteger(0);
+    private AtomicInteger packetsLost = new AtomicInteger(0);
+    private int lastSequenceNumber = -1;
+
     public interface AudioDataCallback {
         void onAudioDataReceived(byte[] data, int length);
         void onReceiveError(String error);
     }
 
+    public AudioReceiver() {
+        opusDecoder = new OpusDecoder(48000, 2);
+        opusDecoder.init();
+    }
+
     public void setCallback(AudioDataCallback callback) {
         this.callback = callback;
+    }
+
+    public void setUseOpus(boolean use) {
+        this.useOpus = use;
     }
 
     public void start(int port) {
@@ -41,7 +62,8 @@ public class AudioReceiver {
         try {
             socket = new DatagramSocket(port);
             socket.setReuseAddress(true);
-            socket.setSoTimeout(5000); // 5 second timeout
+            socket.setSoTimeout(5000);
+            socket.setReceiveBufferSize(256 * 1024); // 256KB buffer
 
             isRunning.set(true);
             receiveThread = new ReceiveThread();
@@ -79,11 +101,23 @@ public class AudioReceiver {
             }
         }
 
+        if (opusDecoder != null) {
+            opusDecoder.release();
+        }
+
         Log.i(TAG, "AudioReceiver stopped");
     }
 
     public boolean isRunning() {
         return isRunning.get();
+    }
+
+    public int getPacketsReceived() {
+        return packetsReceived.get();
+    }
+
+    public int getPacketsLost() {
+        return packetsLost.get();
     }
 
     private class ReceiveThread extends Thread {
@@ -95,12 +129,41 @@ public class AudioReceiver {
             while (isRunning.get()) {
                 try {
                     socket.receive(packet);
+                    packetsReceived.incrementAndGet();
 
-                    if (callback != null) {
-                        byte[] data = new byte[packet.getLength()];
-                        System.arraycopy(packet.getData(), packet.getOffset(), data, 0, packet.getLength());
-                        callback.onAudioDataReceived(data, packet.getLength());
+                    // Parse RTP packet
+                    RtpPacket rtpPacket = RtpPacket.parse(packet.getData());
+                    if (rtpPacket != null) {
+                        // Check for packet loss
+                        int seqNum = rtpPacket.getSequenceNumber();
+                        if (lastSequenceNumber >= 0) {
+                            int expectedSeq = (lastSequenceNumber + 1) & 0xFFFF;
+                            if (seqNum != expectedSeq) {
+                                int lost = (seqNum - expectedSeq + 0x10000) % 0x10000;
+                                packetsLost.addAndGet(lost);
+                                Log.w(TAG, "Packet loss detected: " + lost + " packets");
+                            }
+                        }
+                        lastSequenceNumber = seqNum;
+
+                        // Process payload
+                        byte[] payload = rtpPacket.getPayload();
+                        byte[] audioData;
+
+                        if (useOpus) {
+                            // Decode Opus
+                            audioData = opusDecoder.decode(payload, payload.length);
+                        } else {
+                            // Raw PCM
+                            audioData = payload;
+                        }
+
+                        // Send to callback
+                        if (callback != null && audioData.length > 0) {
+                            callback.onAudioDataReceived(audioData, audioData.length);
+                        }
                     }
+
                 } catch (IOException e) {
                     if (isRunning.get()) {
                         Log.e(TAG, "Receive error", e);
