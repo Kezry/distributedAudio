@@ -6,7 +6,10 @@
       "Bash(git remote *)",
       "Bash(git add *)",
       "Bash(git commit *)",
-      "Bash(git push *)"
+      "Bash(git push *)",
+      "Bash(git ls-remote *)",
+      "Bash(curl -s https://api.github.com/repos/Kezry/distributedAudio/conutors)",
+      "Bash(curl -s https://api.github.com/repos/Kezry/distributedAudio/contributors)"
     ]
   }
 }
