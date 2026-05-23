@@ -1,0 +1,68 @@
+name: Project Status CI
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  check-all-projects:
+    name: Check All Projects
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Check Android Sound Player
+      run: |
+        echo "Checking Android Sound Player..."
+        test -d "AndroidSoundPlayer" || exit 1
+        test -f "AndroidSoundPlayer/build.gradle" || exit 1
+        echo "✓ Android Sound Player structure OK"
+
+    - name: Check Android Controller
+      run: |
+        echo "Checking Android Controller..."
+        test -d "AndroidController" || exit 1
+        test -f "AndroidController/build.gradle" || exit 1
+        echo "✓ Android Controller structure OK"
+
+    - name: Check Windows Sound
+      run: |
+        echo "Checking Windows Sound..."
+        test -d "WindowsSound" || exit 1
+        test -f "WindowsSound/WindowsSound.csproj" || exit 1
+        echo "✓ Windows Sound structure OK"
+
+    - name: Check LICENSE
+      run: |
+        echo "Checking LICENSE..."
+        test -f "LICENSE" || exit 1
+        echo "✓ LICENSE exists"
+
+    - name: Check .gitignore
+      run: |
+        echo "Checking .gitignore..."
+        test -f ".gitignore" || exit 1
+        echo "✓ .gitignore exists"
+
+    - name: Check GitHub Actions
+      run: |
+        echo "Checking GitHub Actions..."
+        test -d ".github/workflows" || exit 1
+        echo "✓ GitHub Actions workflows exist"
+
+    - name: Generate project summary
+      run: |
+        echo "# Distributed Audio Project Status" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "## Project Components" >> $GITHUB_STEP_SUMMARY
+        echo "- ✓ Android Sound Player" >> $GITHUB_STEP_SUMMARY
+        echo "- ✓ Android Controller" >> $GITHUB_STEP_SUMMARY
+        echo "- ✓ Windows Sound Sender" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "## Configuration" >> $GITHUB_STEP_SUMMARY
+        echo "- ✓ GitHub Actions CI/CD" >> $GITHUB_STEP_SUMMARY
+        echo "- ✓ License (CC BY-NC 4.0)" >> $GITHUB_STEP_SUMMARY
