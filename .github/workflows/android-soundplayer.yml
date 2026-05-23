@@ -23,9 +23,7 @@ jobs:
         distribution: 'temurin'
 
     - name: Grant execute permission for gradlew
-      run: |
-        cd AndroidSoundPlayer
-        chmod +x gradlew
+      run: chmod +x AndroidSoundPlayer/gradlew
 
     - name: Cache Gradle packages
       uses: actions/cache@v4
@@ -33,31 +31,29 @@ jobs:
         path: |
           ~/.gradle/caches/
           ~/.gradle/wrapper/
-        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
+        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
         restore-keys: |
           ${{ runner.os }}-gradle-
 
     - name: Validate Gradle wrapper
+      working-directory: AndroidSoundPlayer
       run: |
-        cd AndroidSoundPlayer
         ls -la gradle/wrapper/
         echo "Checking gradle-wrapper.properties..."
         cat gradle/wrapper/gradle-wrapper.properties
 
     - name: Build Debug APK (no tests)
-      run: |
-        cd AndroidSoundPlayer
-        ./gradlew assembleDebug --no-daemon --stacktrace
+      working-directory: AndroidSoundPlayer
+      run: ./gradlew assembleDebug --no-daemon --stacktrace
 
     - name: Check build outputs
-      run: |
-        cd AndroidSoundPlayer
-        ls -la app/build/outputs/apk/debug/ || echo "No APKs found (expected for this demo project)"
+      working-directory: AndroidSoundPlayer
+      run: ls -la app/build/outputs/apk/debug/ || echo "No APKs found (expected for this demo project)"
 
     - name: Upload APK if exists
       uses: actions/upload-artifact@v4
       with:
         name: soundplayer-debug-apk
-        path: AndroidSoundPlayer/app/build/outputs/apk/debug/app-debug.apk
+        path: AndroidSoundPlayer/app/build/outputs/apk/debug/*.apk
         retention-days: 30
         if-no-files-found: ignore

@@ -32,9 +32,9 @@ jobs:
         echo "Checking WindowsSound project structure..."
         cd WindowsSound
         if (Test-Path "WindowsSound.csproj") {
-            echo "✓ WindowsSound.csproj found"
+            echo "WindowsSound.csproj found"
         } else {
-            echo "✗ WindowsSound.csproj not found"
+            echo "WindowsSound.csproj not found"
             exit 1
         }
 
