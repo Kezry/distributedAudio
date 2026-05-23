@@ -54,3 +54,14 @@
 - 记忆系统更新
   - 新增 feedback_todolist_updates.md 记忆
   - 规则覆盖: 任务状态变更、新增任务、进度统计更新
+
+## [2026-05-23] WindowsSound 开发启动
+- 开始 WindowsSound 模块开发
+- GitHub Actions CI/CD 配置就绪
+  - .NET 8.0 构建
+  - Windows 运行器
+  - 自动发布 win-x64 独立可执行文件
+  - 自动创建 Release
+- todolist.md 更新
+  - 标记 #9 WASAPI 音频捕获为"进行中"
+  - 进度: 0/18 完成, 1/18 进行中
