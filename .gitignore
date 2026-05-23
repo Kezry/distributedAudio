@@ -1,0 +1,62 @@
+# Android
+Android/*/build/
+Android/*/local.properties
+Android/*/.idea/
+Android/*/.gradle/
+Android/*/app/build/
+Android/*/app/release/
+Android/*/app/debug/
+Android/*/.externalNativeBuild
+Android/*/.cxx
+Android/*/captures/
+Android/*/out/
+Android*/*.apk
+Android*/*.aab
+Android*/*.ap_
+Android*/*.dex
+Android*/classdump
+Android*/classes.dex
+Android*/*.hprof
+
+# Windows
+Windows/*/bin/
+Windows/*/obj/
+Windows/*/.vs/
+Windows/*/packages/
+Windows*/*.suo
+Windows*/*.user
+Windows*/*.userosscache
+Windows*/*.sln.docstates
+Windows*/_ReSharper*/
+Windows*/*.Designer.cs
+Windows*/*.resx
+Windows*/.vs/
+Windows*/VSCode/
+
+# IDE
+.idea/
+*.iml
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Build outputs
+build/
+dist/
+out/
+target/
+
+# Logs
+*.log
+logs/
+
+# Temporary files
+*.tmp
+*.temp
+*.cache
