@@ -39,21 +39,25 @@ jobs:
       working-directory: AndroidController
       run: |
         ls -la gradle/wrapper/
-        echo "Checking gradle-wrapper.properties..."
         cat gradle/wrapper/gradle-wrapper.properties
+
+    - name: Accept Android SDK licenses
+      run: yes | sdkmanager --licenses || true
 
     - name: Build Debug APK
       working-directory: AndroidController
-      run: ./gradlew assembleDebug --no-daemon --stacktrace
+      run: ./gradlew assembleDebug --no-daemon --stacktrace --info
 
     - name: Check build outputs
       working-directory: AndroidController
-      run: ls -la app/build/outputs/apk/debug/ || echo "No APKs found"
+      run: |
+        ls -laR app/build/outputs/apk/ || echo "No APKs found"
 
     - name: Upload APK if exists
       uses: actions/upload-artifact@v4
+      if: success()
       with:
         name: controller-debug-apk
         path: AndroidController/app/build/outputs/apk/debug/*.apk
         retention-days: 30
-        if-no-files-found: ignore
+        if-no-files-found: warn
