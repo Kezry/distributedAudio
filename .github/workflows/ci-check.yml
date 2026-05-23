@@ -1,0 +1,45 @@
+name: CI Check
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  test:
+    name: Test GitHub Actions
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Check project structure
+      run: |
+        echo "Checking project structure..."
+        test -d "AndroidSoundPlayer" || exit 1
+        test -d "AndroidController" || exit 1
+        test -d "WindowsSound" || exit 1
+        test -d "Protocol" || exit 1
+        test -f "README.md" || exit 1
+        test -f "LICENSE" || exit 1
+        test -f "todolist.md" || exit 1
+        echo "✅ Project structure OK"
+
+    - name: Check Gradle files
+      run: |
+        echo "Checking Android projects..."
+        test -f "AndroidSoundPlayer/gradlew" || exit 1
+        test -f "AndroidController/gradlew" || exit 1
+        test -f "AndroidSoundPlayer/gradle/wrapper/gradle-wrapper.properties" || exit 1
+        test -f "AndroidController/gradle/wrapper/gradle-wrapper.properties" || exit 1
+        echo "✅ Gradle files OK"
+
+    - name: Count files
+      run: |
+        echo "Project statistics:"
+        echo "Total files: $(find . -type f | wc -l)"
+        echo "Java files: $(find . -name "*.java" | wc -l)"
+        echo "C# files: $(find . -name "*.cs" | wc -l)"
+        echo "Markdown files: $(find . -name "*.md" | wc -l)"
