@@ -1121,3 +1121,34 @@ docs/
 - 所有 workflow 都能在 master 分支上正确触发
 - 删除了 4 个无用文件，仓库结构更干净
 
+## [2026-05-24] CI 实跑暴露的源码 bug 修复
+
+**背景:**
+workflow 重写后第一次真正跑到编译阶段（之前都因 wrapper/gradlew 问题在 13s 内挂掉），暴露了一批此前从未被检测出的真实源码缺陷。
+
+**Android (Controller + SoundPlayer):**
+- 错误: `Configuration ':app:debugRuntimeClasspath' contains AndroidX dependencies, but the 'android.useAndroidX' property is not enabled`
+- 原因: 两个 Android 项目从未创建 `gradle.properties`，所以 AGP 没收到 AndroidX 启用标志
+- 修复: 新建 `AndroidController/gradle.properties` 和 `AndroidSoundPlayer/gradle.properties`，包含:
+  ```
+  org.gradle.jvmargs=-Xmx2048m -Dfile.encoding=UTF-8
+  android.useAndroidX=true
+  android.enableJetifier=true
+  ```
+
+**WindowsSound (3 处 C# 语法错误):**
+- `Src/AudioEncoder/OpusDecoder.cs:99`: 扩展方法 `SetMaxBandwidth(this OpusEncoder, OpusBandwidth)` 缺少 `this` 参数名 → 改为 `this OpusEncoder encoder`
+- `Src/Dlna/DlnaController.cs:188,235`: 匿名对象用 `params` 作为成员名（C# 关键字） → 改为 `@params`（C# 关键字转义语法，序列化后 JSON key 仍是 "params"）
+- `Src/NetworkTransport/AudioStreamer.cs:20`: 泛型嵌套笔误 `Array.Empty<byte<byte>()` → 改为 `Array.Empty<byte>()`
+
+**修改文件:**
+- AndroidController/gradle.properties (新建)
+- AndroidSoundPlayer/gradle.properties (新建)
+- WindowsSound/Src/AudioEncoder/OpusDecoder.cs
+- WindowsSound/Src/Dlna/DlnaController.cs
+- WindowsSound/Src/NetworkTransport/AudioStreamer.cs
+
+**经验教训:**
+- CI 触发分支错误（main/develop vs master）导致这些 bug 长期未被发现
+- 修好 CI 基础设施后第一时间就抓出 4 个真实 bug，验证了 workflow 修复的价值
+

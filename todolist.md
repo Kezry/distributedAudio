@@ -440,6 +440,12 @@
 
 **更新日期：** 2026-05-24
 
+**最近更新 (2026-05-24):**
+- CI workflow 根本性修复：用 `gradle/actions/setup-gradle@v4` 绕过损坏 wrapper
+- 修正所有 workflow 触发分支 main/develop → master/main
+- 新建两个 Android 项目的 gradle.properties (useAndroidX/jetifier)
+- 修复 WindowsSound 3 处 C# 语法 bug (OpusDecoder/DlnaController/AudioStreamer)
+
 **基于设计方案：** v6.0
 
 ---

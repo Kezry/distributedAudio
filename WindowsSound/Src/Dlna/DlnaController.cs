@@ -186,7 +186,7 @@ namespace WindowsSound.Dlna
                 var command = new
                 {
                     command = "PLAY_AT",
-                    params = new
+                    @params = new
                     {
                         timestamp = timestampMs,
                         mediaUrl = mediaUrl ?? ""
@@ -233,7 +233,7 @@ namespace WindowsSound.Dlna
                 var command = new
                 {
                     command = "JOIN_GROUP",
-                    params = new
+                    @params = new
                     {
                         groupId = groupId,
                         delayMs = delayMs,

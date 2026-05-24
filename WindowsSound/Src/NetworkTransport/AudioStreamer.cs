@@ -17,7 +17,7 @@ namespace DistributedAudio.NetworkTransport
         public ushort SequenceNumber { get; set; }
         public uint Timestamp { get; set; }
         public uint Ssrc { get; set; }
-        public byte[] Payload { get; set; } = Array.Empty<byte<byte>();
+        public byte[] Payload { get; set; } = Array.Empty<byte>();
 
         public byte[] Serialize()
         {

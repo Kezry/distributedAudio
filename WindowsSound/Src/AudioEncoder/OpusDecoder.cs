@@ -96,7 +96,7 @@ namespace DistributedAudio.AudioEncoder
         /// <summary>
         /// Set maximum bandwidth
         /// </summary>
-        public static void SetMaxBandwidth(this OpusEncoder, OpusBandwidth bandwidth)
+        public static void SetMaxBandwidth(this OpusEncoder encoder, OpusBandwidth bandwidth)
         {
             // Implementation depends on OpusNative constants
         }
