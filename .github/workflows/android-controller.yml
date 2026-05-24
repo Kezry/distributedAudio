@@ -41,18 +41,45 @@ jobs:
     - name: Regenerate Gradle wrapper
       run: gradle wrapper --gradle-version 8.2 --distribution-type bin
 
+    - name: Generate release keystore
+      run: |
+        keytool -genkey -v \
+          -keystore $GITHUB_WORKSPACE/AndroidController/release.keystore \
+          -storepass androidci \
+          -keypass androidci \
+          -alias release \
+          -keyalg RSA -keysize 2048 -validity 10000 \
+          -dname "CN=DistributedAudio CI, OU=Controller, O=Kezry, L=Unknown, ST=Unknown, C=CN"
+
     - name: Build Debug APK
       run: gradle assembleDebug --no-daemon --stacktrace
+
+    - name: Build Release APK
+      env:
+        KEYSTORE_FILE: ${{ github.workspace }}/AndroidController/release.keystore
+        KEYSTORE_PASSWORD: androidci
+        KEY_ALIAS: release
+        KEY_PASSWORD: androidci
+      run: gradle assembleRelease --no-daemon --stacktrace
 
     - name: List build outputs
       if: always()
       run: ls -laR app/build/outputs/apk/ || echo "No APKs found"
 
-    - name: Upload APK
+    - name: Upload Debug APK
       uses: actions/upload-artifact@v4
       if: success()
       with:
         name: controller-debug-apk
         path: AndroidController/app/build/outputs/apk/debug/*.apk
+        retention-days: 30
+        if-no-files-found: warn
+
+    - name: Upload Release APK
+      uses: actions/upload-artifact@v4
+      if: success()
+      with:
+        name: controller-release-apk
+        path: AndroidController/app/build/outputs/apk/release/*.apk
         retention-days: 30
         if-no-files-found: warn

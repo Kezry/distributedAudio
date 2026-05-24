@@ -1,5 +1,21 @@
 # Distributed Audio System - Todo List (Updated v6.0 Final Release)
 
+## ⚠️ v0.01 Tag 状态说明 (2026-05-24)
+
+**已打 tag `v0.01`**，但**不是**功能完成版，仅作为"端到端能编译并产出 artifact"的最低基线：
+- AndroidController APK = 单 stub MainActivity，无任何业务逻辑
+- AndroidSoundPlayer APK = 单 stub MainActivity，无任何业务逻辑
+- WindowsSound EXE = 编译时排除了 DLNA/ChannelManager/MainViewModel/MainWindow/WasapiCapture，无 UI 入口
+
+**CI artifact 产出位置：** master push 对应的 Actions run，6 个 artifact：
+- `controller-debug-apk`、`controller-release-apk`
+- `soundplayer-debug-apk`、`soundplayer-release-apk`
+- `windows-sound-publish-zip`、`windows-sound-single-exe`
+
+要让 v0.02 或以后的 tag 变成"可用版本"，需要按下方 "🚨 待补回功能" 逐项恢复。
+
+---
+
 ## 项目进度概览
 
 - **总任务数：** 36 个

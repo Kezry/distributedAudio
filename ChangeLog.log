@@ -1297,3 +1297,38 @@ CI 反馈两个 Android 项目剩余业务文件还有大量内部缺失（Netwo
 **代价:**
 两个 Android 项目和 WindowsSound 都被缩减到 "能编译" 的最小子集。原项目宣称的 36/36 任务 100% 完成是不准确的，实际有大量代码从未端到端编译过。详见 todolist.md "🚨 待补回功能" 段。
 
+## [2026-05-24] v0.01 基线 tag：CI 必须产出 artifacts
+
+**目标：** 打 master tag `v0.01`，使三个 workflow 都产出实际可下载的二进制 artifact。注意：本 tag 仅代表"端到端能编译并产出文件"的最低基线，APK 是空壳 launcher，Windows EXE 缺 DLNA/ChannelManager/MainWindow，请勿当作可用版本分发。
+
+**workflow 修改：**
+
+`.github/workflows/android-controller.yml` / `android-soundplayer.yml`
+- 新增 "Generate release keystore" step：用 keytool 在 `$GITHUB_WORKSPACE/<project>/release.keystore` 生成自签 keystore (alias=release, validity=10000d)
+- 新增 "Build Release APK" step：通过 4 个 env (KEYSTORE_FILE / PASSWORD / KEY_ALIAS / KEY_PASSWORD) 把签名信息传给 gradle
+- artifacts 拆为两个 upload：`<project>-debug-apk` + `<project>-release-apk`
+
+`<project>/app/build.gradle`
+- 顶部加 `keystoreFile = System.getenv("KEYSTORE_FILE")` + `hasKeystore` 判断
+- `signingConfigs.release` 仅在 hasKeystore 时声明（避免本地无 keystore 时配置失败）
+- `buildTypes.release.signingConfig` 同样条件分支
+
+`.github/workflows/windows-sound.yml`
+- 删除两处 `continue-on-error: true`（CI 必须真正失败而非默默通过）
+- 删除冗余的 "Check project structure" step
+- 新增双 publish：multi-file (`./publish`) + single-file EXE (`./publish-single`)
+- 注意 ⚠️：multi-file publish **不能加** `--no-build`，因为前面的 `dotnet build` 没指定 `-r win-x64`，RID 不匹配 publish 输出会失败
+- multi-file 用 `Compress-Archive` 打成 `DistributedAudio-win-x64.zip`
+- 上传两个 artifact: `windows-sound-publish-zip` + `windows-sound-single-exe`
+
+**预期产出（master push 触发）：**
+- `controller-debug-apk` + `controller-release-apk`
+- `soundplayer-debug-apk` + `soundplayer-release-apk`
+- `windows-sound-publish-zip` + `windows-sound-single-exe`
+
+共 6 个 artifact（5 个工件类型 + EXE 单独）。
+
+**已知限制：**
+- 本 tag 不在 release tag 触发 workflow（workflows 只监听 push to master/main + PR），artifact 在对应 master push 的 run 里，需要从 Actions 下载，不会自动 attach 到 GitHub Release。
+- Android release APK 用的是 CI 临时 keystore，每次重新生成，**不能用于商店发布**（签名不可重现）。
+
