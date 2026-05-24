@@ -96,7 +96,7 @@ namespace DistributedAudio.NetworkTransport
 
             try
             {
-                await _udpClient.ConnectAsync(remoteEndPoint.Address, remoteEndPoint.Port);
+                _udpClient.Connect(remoteEndPoint);
 
                 // Start send loop
                 _sendTask = Task.Run(SendLoop);
