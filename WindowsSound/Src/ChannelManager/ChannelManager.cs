@@ -4,7 +4,8 @@ using System.Linq;
 using System.IO;
 using System.Runtime.Serialization.Json;
 using System.Text;
-using WindowsSound.Discovery;
+using DistributedAudio.AudioCapture;
+using DistributedAudio.DeviceDiscovery;
 
 namespace WindowsSound.ChannelManager
 {

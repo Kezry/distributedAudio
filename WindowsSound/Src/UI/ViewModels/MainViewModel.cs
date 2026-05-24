@@ -10,6 +10,7 @@ using DistributedAudio.ChannelRouter;
 using DistributedAudio.DeviceDiscovery;
 using DistributedAudio.NetworkTransport;
 using DistributedAudio.SyncManager;
+using ChannelRouterType = DistributedAudio.ChannelRouter.ChannelRouter;
 
 namespace DistributedAudio.UI.ViewModels
 {
@@ -21,7 +22,7 @@ namespace DistributedAudio.UI.ViewModels
         private readonly WasapiCapture _audioCapture;
         private readonly OpusEncoder _audioEncoder;
         private readonly DeviceScanner _deviceScanner;
-        private readonly ChannelRouter _channelRouter;
+        private readonly ChannelRouterType _channelRouter;
         private readonly AudioStreamerManager _streamerManager;
         private readonly AudioSyncManager _syncManager;
         private readonly DynamicBufferManager _bufferManager;
@@ -361,7 +362,7 @@ namespace DistributedAudio.UI.ViewModels
     /// <summary>
     /// 活动设备视图模型
     /// </summary>
-    public class ActiveDeviceViewModel : ObservableObject
+    public partial class ActiveDeviceViewModel : ObservableObject
     {
         public SoundDevice Device { get; }
 

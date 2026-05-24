@@ -4,8 +4,9 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using DistributedAudio.AudioCapture;
+using DistributedAudio.DeviceDiscovery;
 using WindowsSound.ChannelManager;
-using WindowsSound.Discovery;
 using WindowsSound.UI.ViewModels;
 
 namespace WindowsSound.UI.Views

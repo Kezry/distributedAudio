@@ -1,5 +1,5 @@
-using NAudio.Wasapi;
 using NAudio.CoreAudioApi;
+using NAudio.Wave;
 using System;
 using System.Threading.Tasks;
 

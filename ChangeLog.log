@@ -1152,3 +1152,38 @@ workflow 重写后第一次真正跑到编译阶段（之前都因 wrapper/gradl
 - CI 触发分支错误（main/develop vs master）导致这些 bug 长期未被发现
 - 修好 CI 基础设施后第一时间就抓出 4 个真实 bug，验证了 workflow 修复的价值
 
+## [2026-05-24] 第三轮 CI 修复：依赖坐标 + WindowsSound 命名空间统一
+
+**Android 端 - 修正依赖坐标和仓库:**
+- AndroidController: `javax.jmdns:jmdns:3.5.7` (不存在) → `org.jmdns:jmdns:3.5.9` (Maven Central 正确坐标)
+- AndroidSoundPlayer: 4thline cling 2.1.1 不在 Maven Central，在 settings.gradle 添加 `4thline.org/m2/` 和 `jitpack.io` 仓库
+
+**WindowsSound - 命名空间和 using 缺失修复:**
+- 项目存在两个根命名空间历史遗留：`DistributedAudio.*`（早期）和 `WindowsSound.*`（后期）
+- 多个文件 `using WindowsSound.Discovery;` 引用了不存在的命名空间，实际类型在 `DistributedAudio.AudioCapture` 和 `DistributedAudio.DeviceDiscovery`
+- 修改 4 个文件: DlnaController.cs / ChannelManager.cs / ChannelManagerViewModel.cs / ChannelManagerWindow.xaml.cs
+
+**WindowsSound - 类名/命名空间冲突 (CS0118):**
+- `WindowsSound.ChannelManager.ChannelManager` (类) 与 `WindowsSound.ChannelManager` (命名空间) 同名导致解析歧义
+- `DistributedAudio.ChannelRouter.ChannelRouter` 同样问题
+- 修复: 使用 C# using 别名 (`using ChannelMgr = WindowsSound.ChannelManager.ChannelManager;`)
+
+**WindowsSound - 其他:**
+- WasapiCapture.cs: 删除不存在的 `using NAudio.Wasapi;`，添加 `using NAudio.Wave;`
+- ModeSwitchViewModel.cs: 补 `using System;` (修复 EventHandler/EventArgs CS0246)
+- MainViewModel.cs: `ActiveDeviceViewModel` 类添加 `partial` 修饰符（CommunityToolkit.Mvvm 源生成器要求）
+
+**修改文件:**
+- AndroidController/app/build.gradle
+- AndroidSoundPlayer/settings.gradle
+- WindowsSound/Src/AudioCapture/WasapiCapture.cs
+- WindowsSound/Src/ChannelManager/ChannelManager.cs
+- WindowsSound/Src/Dlna/DlnaController.cs
+- WindowsSound/Src/UI/ViewModels/MainViewModel.cs
+- WindowsSound/Src/UI/ViewModels/ChannelManagerViewModel.cs
+- WindowsSound/Src/UI/ViewModels/ModeSwitchViewModel.cs
+- WindowsSound/Src/UI/Views/ChannelManagerWindow.xaml.cs
+
+**预期效果:**
+WindowsSound 还可能有未知的剩余编译错误（CI 编译器一般只报第一批），需要等推送后看 CI 反馈。
+

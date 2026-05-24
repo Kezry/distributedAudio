@@ -4,7 +4,8 @@ using System.Linq;
 using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
-using WindowsSound.Discovery;
+using DistributedAudio.AudioCapture;
+using DistributedAudio.DeviceDiscovery;
 
 namespace WindowsSound.Dlna
 {

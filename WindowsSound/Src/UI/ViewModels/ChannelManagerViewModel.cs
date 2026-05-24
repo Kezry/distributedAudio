@@ -6,8 +6,10 @@ using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.Input;
+using DistributedAudio.AudioCapture;
+using DistributedAudio.DeviceDiscovery;
 using WindowsSound.ChannelManager;
-using WindowsSound.Discovery;
+using ChannelMgr = WindowsSound.ChannelManager.ChannelManager;
 
 namespace WindowsSound.UI.ViewModels
 {
@@ -16,7 +18,7 @@ namespace WindowsSound.UI.ViewModels
     /// </summary>
     public class ChannelManagerViewModel : INotifyPropertyChanged
     {
-        private readonly ChannelManager _channelManager;
+        private readonly ChannelMgr _channelManager;
         private readonly ChannelToneGenerator _toneGenerator;
 
         private SceneConfiguration _selectedScene;

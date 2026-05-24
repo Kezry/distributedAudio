@@ -48,7 +48,7 @@ dependencies {
 
     // mDNS discovery
     implementation 'org.eclipse.jetty:jetty-client:11.0.15'
-    implementation 'javax.jmdns:jmdns:3.5.7'
+    implementation 'org.jmdns:jmdns:3.5.9'
 
     // JSON
     implementation 'com.google.code.gson:gson:2.10.1'
