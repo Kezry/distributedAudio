@@ -2,9 +2,9 @@ name: Project Status CI
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [ master, main ]
   pull_request:
-    branches: [ main, develop ]
+    branches: [ master, main ]
 
 jobs:
   check-all-projects:

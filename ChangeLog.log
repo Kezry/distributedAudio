@@ -1085,3 +1085,39 @@ docs/
 - 许可证问题 → 添加sdkmanager许可证接受步骤
 - 调试困难 → 添加详细日志输出
 
+## [2026-05-24] GitHub Actions 根本性修复
+
+**问题根源分析:**
+- 嵌套目录污染: `AndroidController/AndroidController/` 和 `AndroidController/AndroidSoundPlayer/` 是之前错误创建的多余目录，里面只含损坏的 gradlew 脚本
+- gradlew 脚本损坏: `AndroidSoundPlayer/gradlew` (3747 bytes) 含有语法错误（反引号嵌套错误、未关闭的引号、无效的 `SAVED` 变量赋值），并非标准 Gradle 脚本
+- gradle-wrapper.jar 元数据异常: file 命令显示 `uncompressed size 0`，虽然 jar 内含有 GradleWrapperMain 等 class，但 zip 中央目录元数据有问题，可能导致部分 JVM 无法正确加载
+- 触发分支不一致: `ci-check.yml` 和 `project-status.yml` 仅在 `main/develop` 分支触发，从未在实际使用的 `master` 分支上运行
+
+**修复方案 - 绕过损坏的本地 wrapper:**
+- 改用 `gradle/actions/setup-gradle@v4` 在 CI 环境中安装 Gradle 8.2
+- 工作流中先运行 `gradle wrapper --gradle-version 8.2` 重新生成正确的 wrapper
+- 然后用 `gradle assembleDebug` 直接构建，不依赖本地损坏的 `./gradlew` 和 `gradle-wrapper.jar`
+- 使用 `defaults.run.working-directory` 替代散落的 cd 命令，使流程更清晰
+
+**清理多余文件:**
+- 删除 `AndroidController/AndroidController/gradle/wrapper/gradle-wrapper.jar`
+- 删除 `AndroidController/AndroidController/gradlew`
+- 删除 `AndroidController/AndroidSoundPlayer/gradle/wrapper/gradle-wrapper.jar`
+- 删除 `AndroidController/AndroidSoundPlayer/gradlew`
+
+**修复触发分支:**
+- ci-check.yml: `main, develop` → `master, main`
+- project-status.yml: `main, develop` → `master, main`
+
+**修改的文件:**
+- .github/workflows/android-controller.yml (重写)
+- .github/workflows/android-soundplayer.yml (重写)
+- .github/workflows/ci-check.yml (触发分支)
+- .github/workflows/project-status.yml (触发分支)
+
+**关键收益:**
+- 不再依赖本地损坏的 gradlew/wrapper.jar，CI 自主生成
+- 工作流配置更简洁，可读性提升
+- 所有 workflow 都能在 master 分支上正确触发
+- 删除了 4 个无用文件，仓库结构更干净
+

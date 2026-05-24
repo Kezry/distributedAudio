@@ -12,6 +12,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
 
+    defaults:
+      run:
+        working-directory: AndroidController
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
@@ -22,39 +26,29 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
 
-    - name: Grant execute permission for gradlew
-      run: chmod +x AndroidController/gradlew
-
-    - name: Cache Gradle packages
-      uses: actions/cache@v4
+    - name: Setup Gradle
+      uses: gradle/actions/setup-gradle@v4
       with:
-        path: |
-          ~/.gradle/caches/
-          ~/.gradle/wrapper/
-        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-        restore-keys: |
-          ${{ runner.os }}-gradle-
+        gradle-version: '8.2'
 
-    - name: Validate Gradle wrapper
+    - name: Show project structure
       run: |
-        cd AndroidController
-        ls -la gradle/wrapper/
-        cat gradle/wrapper/gradle-wrapper.properties
+        echo "Project root:"
+        ls -la
+        echo "App directory:"
+        ls -la app/
 
-    - name: Accept Android SDK licenses
-      run: yes | sdkmanager --licenses || true
+    - name: Regenerate Gradle wrapper
+      run: gradle wrapper --gradle-version 8.2 --distribution-type bin
 
     - name: Build Debug APK
-      run: |
-        cd AndroidController
-        ./gradlew assembleDebug --no-daemon --stacktrace
+      run: gradle assembleDebug --no-daemon --stacktrace
 
-    - name: Check build outputs
-      run: |
-        cd AndroidController
-        ls -laR app/build/outputs/apk/ || echo "No APKs found"
+    - name: List build outputs
+      if: always()
+      run: ls -laR app/build/outputs/apk/ || echo "No APKs found"
 
-    - name: Upload APK if exists
+    - name: Upload APK
       uses: actions/upload-artifact@v4
       if: success()
       with:
