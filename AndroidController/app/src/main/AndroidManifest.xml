@@ -27,11 +27,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <activity
-            android:name=".ui.DeviceConfigActivity"
-            android:exported="false"
-            android:parentActivityName=".ui.MainActivity" />
     </application>
 
 </manifest>

@@ -33,26 +33,10 @@ dependencies {
     // Core Android
     implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'com.google.android.material:material:1.11.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
 
-    // DLNA support (cling 2.1.2 via jitpack — Maven Central does not host these artifacts)
-    implementation 'com.github.4thline.cling:cling-core:2.1.2'
-    implementation 'com.github.4thline.cling:cling-support:2.1.2'
-
-    // Network
-    implementation 'com.squareup.okhttp3:okhttp:4.12.0'
-
-    // Audio
-    implementation 'com.google.android.exoplayer:exoplayer-core:2.19.1'
-
-    // JSON
-    implementation 'com.google.code.gson:gson:2.10.1'
-
-    // Lifecycle
-    implementation 'androidx.lifecycle:lifecycle-runtime:2.7.0'
+    // mDNS discovery (used by DeviceDiscovery.java)
+    implementation 'org.jmdns:jmdns:3.5.9'
 
     // Testing
     testImplementation 'junit:junit:4.13.2'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
 }

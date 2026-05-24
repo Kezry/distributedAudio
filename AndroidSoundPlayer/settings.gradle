@@ -11,8 +11,6 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
-        maven { url 'https://4thline.org/m2/' }
-        maven { url 'https://jitpack.io' }
     }
 }
 

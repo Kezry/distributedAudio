@@ -5,8 +5,6 @@ import android.net.nsd.NsdManager;
 import android.net.nsd.NsdServiceInfo;
 import android.util.Log;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
