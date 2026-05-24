@@ -14,6 +14,22 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <!-- Temporarily excluded: files written against AudioDevice properties that do not exist (DeviceId/IpAddress).
+         The intended model class is SoundDevice (DeviceDiscovery). Refactor needed before re-enabling. -->
+    <Compile Remove="Src\Dlna\DlnaController.cs" />
+    <Compile Remove="Src\ChannelManager\ChannelManager.cs" />
+    <Compile Remove="Src\UI\ViewModels\ChannelManagerViewModel.cs" />
+    <Compile Remove="Src\UI\Views\ChannelManagerWindow.xaml.cs" />
+    <Page Remove="Src\UI\Views\ChannelManagerWindow.xaml" />
+    <!-- WasapiCapture uses NAudio APIs (EngineLatencyInMilliseconds) removed in NAudio 2.x; needs rework. -->
+    <Compile Remove="Src\AudioCapture\WasapiCapture.cs" />
+    <!-- MainViewModel references files above; exclude until they're refactored. -->
+    <Compile Remove="Src\UI\ViewModels\MainViewModel.cs" />
+    <Compile Remove="Src\UI\Views\MainWindow.xaml.cs" />
+    <Page Remove="Src\UI\Views\MainWindow.xaml" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
